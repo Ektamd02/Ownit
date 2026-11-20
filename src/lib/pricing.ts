@@ -1,10 +1,21 @@
-import { bundleDiscountCents, currency, deliverableOffers, demoDiscountCodes } from '../config/pricing';
+import { bundleDiscountPaise, currency, deliverableOffers, demoDiscountCodes } from '../config/pricing';
 import type { DiscountCode } from '../config/pricing';
 import type { DeliverableId } from '../state/types';
 
-export function formatMoney(cents: number): string {
-  return new Intl.NumberFormat(currency.locale, { style: 'currency', currency: currency.code }).format(cents / 100);
+const formatter = new Intl.NumberFormat(currency.locale, {
+  style: 'currency',
+  currency: currency.code,
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
+/** e.g. 129900 paise → "₹1,299" (Indian digit grouping: ₹1,29,900 for larger amounts). */
+export function formatMoney(paise: number): string {
+  return formatter.format(Math.round(paise / 100));
 }
+
+/** Discounts are kept to whole rupees so every amount displays the same way. */
+const toWholeRupees = (paise: number) => Math.round(paise / 100) * 100;
 
 export function findDiscount(code: string): DiscountCode | null {
   const c = code.trim().toUpperCase();
@@ -13,23 +24,25 @@ export function findDiscount(code: string): DiscountCode | null {
 }
 
 export interface Totals {
-  lines: { id: DeliverableId; name: string; cents: number }[];
-  subtotalCents: number;
-  bundleCents: number;
-  discount: { code: string; label: string; cents: number } | null;
-  totalCents: number;
+  lines: { id: DeliverableId; name: string; paise: number }[];
+  subtotalPaise: number;
+  bundlePaise: number;
+  discount: { code: string; label: string; paise: number } | null;
+  totalPaise: number;
 }
 
 export function computeTotals(deliverables: DeliverableId[], code: string): Totals {
-  const lines = deliverables.map((id) => ({ id, name: deliverableOffers[id].name, cents: deliverableOffers[id].priceCents }));
-  const subtotalCents = lines.reduce((s, l) => s + l.cents, 0);
-  const bundleCents = deliverables.length > 1 ? Math.min(bundleDiscountCents, subtotalCents) : 0;
-  const afterBundle = subtotalCents - bundleCents;
+  const lines = deliverables.map((id) => ({ id, name: deliverableOffers[id].name, paise: deliverableOffers[id].pricePaise }));
+  const subtotalPaise = lines.reduce((s, l) => s + l.paise, 0);
+  const bundlePaise = deliverables.length > 1 ? Math.min(bundleDiscountPaise, subtotalPaise) : 0;
+  const afterBundle = subtotalPaise - bundlePaise;
   const d = findDiscount(code);
   let discount: Totals['discount'] = null;
   if (d) {
-    const raw = d.kind === 'percent' ? Math.round((afterBundle * d.value) / 100) : d.valueCents;
-    discount = { code: d.code, label: d.label, cents: Math.min(raw, afterBundle) };
+    const raw = d.kind === 'percent' ? (afterBundle * d.value) / 100 : d.valuePaise;
+    discount = { code: d.code, label: d.label, paise: Math.min(toWholeRupees(raw), afterBundle) };
   }
-  return { lines, subtotalCents, bundleCents, discount, totalCents: afterBundle - (discount?.cents ?? 0) };
+  return { lines, subtotalPaise, bundlePaise, discount, totalPaise: afterBundle - (discount?.paise ?? 0) };
 }
+
+export const demoCodeList = () => demoDiscountCodes.map((d) => d.code).join(', ');

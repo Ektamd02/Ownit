@@ -4,7 +4,6 @@ import { welcomeCopy } from '../config/copy';
 import { useStore } from '../state/store';
 import { Button } from '../components/Button';
 import { DraftList } from '../components/DraftList';
-import { Icon } from '../components/Icon';
 
 export function Welcome() {
   const { drafts, startNew, startSample, storageOk } = useStore();
@@ -14,10 +13,10 @@ export function Welcome() {
 
   return (
     <main className="welcome" id="main">
-      <section className="welcome__hero">
+      <section className="welcome__hero enter">
         <p className="eyebrow">{welcomeCopy.eyebrow}</p>
         <h1 className="welcome__title" tabIndex={-1} ref={ref}>
-          {brand.name}. <span className="welcome__tagline">{brand.tagline}</span>
+          <span className="welcome__brand">{brand.name}.</span> <span className="welcome__tagline">{brand.tagline}</span>
         </h1>
         <p className="welcome__lead">{welcomeCopy.lead}</p>
         <div className="welcome__actions">
@@ -26,21 +25,21 @@ export function Welcome() {
         </div>
         <p className="muted small">{welcomeCopy.time}</p>
         {!storageOk && (
-          <p className="notice notice--warn small" role="status">
+          <p className="notice notice--error small" role="status">
             Your browser is blocking local storage, so drafts won’t be saved between visits. Everything else still works.
           </p>
         )}
       </section>
 
-      <ul className="welcome__points">
+      <ol className="welcome__points" aria-label="What you’ll get">
         {welcomeCopy.points.map((p, i) => (
           <li key={p.title} className={`point point--${i}`}>
-            <span className="point__icon" aria-hidden="true"><Icon name={i === 2 ? 'check' : i === 1 ? 'layers' : 'edit'} /></span>
+            <span className="point__num" aria-hidden="true">0{i + 1}</span>
             <p className="point__title">{p.title}</p>
             <p className="point__body">{p.body}</p>
           </li>
         ))}
-      </ul>
+      </ol>
 
       {drafts.length > 0 && (
         <section className="welcome__drafts" aria-labelledby="your-drafts">

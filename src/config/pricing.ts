@@ -2,7 +2,8 @@
  * Prices and demo discount codes.
  *
  * ⚠️ SAMPLE VALUES ONLY — prices are not final. Edit them here.
- * Amounts are stored in cents to avoid floating-point rounding.
+ * Amounts are in paise (₹1 = 100 paise) to avoid floating-point rounding.
+ * Keep them to whole rupees; discounts are rounded to the nearest rupee.
  *
  * When a real payment provider is connected, prices and discount codes must also be
  * validated on the server — never trust a total calculated in the browser.
@@ -11,13 +12,13 @@ import type { DeliverableId } from '../state/types';
 
 export const PRICES_ARE_SAMPLE = true;
 
-export const currency = { code: 'USD', locale: 'en-US' } as const;
+export const currency = { code: 'INR', locale: 'en-IN' } as const;
 
 export interface DeliverableOffer {
   id: DeliverableId;
   name: string;
   shortDescription: string;
-  priceCents: number;
+  pricePaise: number;
   includes: string[];
 }
 
@@ -26,7 +27,7 @@ export const deliverableOffers: Record<DeliverableId, DeliverableOffer> = {
     id: 'resume',
     name: 'Resume',
     shortDescription: 'A clear, one-page resume you can send with applications.',
-    priceCents: 1900, // SAMPLE
+    pricePaise: 49900, // SAMPLE — ₹499
     includes: [
       'Guided questions tailored to your experience',
       'A fact-check of everything before it’s written',
@@ -38,7 +39,7 @@ export const deliverableOffers: Record<DeliverableId, DeliverableOffer> = {
     id: 'linkedin',
     name: 'LinkedIn profile',
     shortDescription: 'Headline, About, experience and skills ready to paste in.',
-    priceCents: 1500, // SAMPLE
+    pricePaise: 39900, // SAMPLE — ₹399
     includes: [
       'A headline that says what you do and want',
       'An About section in your own voice',
@@ -49,15 +50,15 @@ export const deliverableOffers: Record<DeliverableId, DeliverableOffer> = {
 };
 
 /** Taken off automatically when both deliverables are selected. Set to 0 to disable. */
-export const bundleDiscountCents = 500; // SAMPLE
+export const bundleDiscountPaise = 10000; // SAMPLE — ₹100
 
 export type DiscountCode =
   | { code: string; kind: 'percent'; value: number; label: string }
-  | { code: string; kind: 'fixed'; valueCents: number; label: string };
+  | { code: string; kind: 'fixed'; valuePaise: number; label: string };
 
 /** DEMO codes for testing the checkout flow. Matching is case-insensitive. */
 export const demoDiscountCodes: DiscountCode[] = [
   { code: 'WELCOME10', kind: 'percent', value: 10, label: '10% off' },
   { code: 'STUDENT25', kind: 'percent', value: 25, label: '25% off for students' },
-  { code: 'FRIEND5', kind: 'fixed', valueCents: 500, label: '$5 off' },
+  { code: 'FRIEND100', kind: 'fixed', valuePaise: 10000, label: '₹100 off' },
 ];

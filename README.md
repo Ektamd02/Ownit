@@ -46,9 +46,9 @@ delete, or clear everything.
 
 | What | File |
 | --- | --- |
-| Product name, tagline, colour palette | `src/config/brand.ts` |
-| Prices, bundle saving, demo discount codes | `src/config/pricing.ts` (**sample values**) |
-| All questions, options, examples and helper copy | `src/config/copy.ts` |
+| Product name, tagline, colour palette (every colour in the app) | `src/config/brand.ts` |
+| Prices in ₹ (stored in paise), bundle saving, demo discount codes | `src/config/pricing.ts` (**sample values**) |
+| All questions, options, examples, helper copy and step acknowledgement lines | `src/config/copy.ts` |
 | Sample (fictional) person | `src/state/sample.ts` |
 | Demo draft writer | `src/lib/generator/demoGenerator.ts` |
 | Checkout hook-up point | `src/lib/checkout.ts` |
@@ -64,5 +64,5 @@ delete, or clear everything.
 
 ## Stack
 
-Vite + React 19 + TypeScript, plain CSS with design tokens (`src/styles/global.css`), self-hosted Inter font,
+Vite + React 19 + TypeScript, plain CSS (`src/styles/global.css`) that reads colour tokens set from `src/config/brand.ts`, self-hosted Inter font,
 Vitest. No backend, no accounts, no LinkedIn integration.

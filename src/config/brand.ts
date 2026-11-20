@@ -1,11 +1,10 @@
 /**
  * Brand settings — the single place to change the product name, tagline and palette.
  *
- * The palette is applied to the page as CSS custom properties (see applyBrandTheme),
- * so every component picks up changes made here automatically.
- *
- * Hex values approximate the named colours from the visual reference.
- * Adjust them here if the reference uses slightly different shades.
+ * Every colour in the app comes from here. Palette values were sampled from the
+ * brand reference (Onyx, Wisteria, Lemon Lime, Jordy Blue, Lilac, Peach Fuzz,
+ * Floral White). Tints, borders and greys are blends of these with white, so no
+ * new hues are introduced. applyBrandTheme() writes them onto :root as CSS variables.
  */
 export const brand = {
   name: 'Ownit',
@@ -14,39 +13,73 @@ export const brand = {
   titleSuffix: 'resume and LinkedIn helper',
 
   palette: {
-    floralWhite: '#FFFAF0', // main background
-    onyx: '#141414', // primary text (near-black)
-    lemonLime: '#E3FF00', // primary actions
-    lemonLimeHover: '#D2EC00',
-    wisteria: '#C9A0DC', // restrained accents
-    lilac: '#C8A2C8',
+    onyx: '#000000', // primary text
+    wisteria: '#D597EC',
+    lemonLime: '#EAFE5F', // primary actions
+    jordyBlue: '#9BC3FF',
+    lilac: '#F5E8FC',
     peachFuzz: '#FFBE98',
-    jordyBlue: '#8AB9F1',
+    floralWhite: '#FAF7EE', // quiet wells and surfaces
+    white: '#FFFFFF', // main background
+  },
+
+  /** Functional colour for errors only (not part of the decorative palette). */
+  status: {
+    error: '#B3261E',
   },
 } as const;
 
 /** Writes the palette and the derived UI tokens onto :root. */
 export function applyBrandTheme(root: HTMLElement = document.documentElement) {
   const p = brand.palette;
+  const ink = (strength: number) => mix(p.onyx, p.white, strength);
+  const tint = (c: string, strength: number) => mix(c, p.white, strength);
+
   const tokens: Record<string, string> = {
-    '--color-bg': p.floralWhite,
-    '--color-surface': '#FFFFFF',
+    // Base
+    '--color-bg': p.white,
+    '--color-surface': p.white,
+    '--color-well': p.floralWhite,
     '--color-text': p.onyx,
-    '--color-text-muted': '#55524C', // 7.4:1 on Floral White
-    '--color-border': '#E6E0D4',
-    '--color-border-strong': '#C9C2B4',
-    '--color-primary': p.lemonLime,
-    '--color-primary-hover': p.lemonLimeHover,
-    '--color-on-primary': p.onyx, // ~17:1 on Lemon Lime
-    '--color-accent-wisteria': p.wisteria,
-    '--color-accent-lilac': p.lilac,
-    '--color-accent-peach': p.peachFuzz,
-    '--color-accent-blue': p.jordyBlue,
-    '--color-wisteria-soft': mix(p.wisteria, p.floralWhite, 0.22),
-    '--color-peach-soft': mix(p.peachFuzz, p.floralWhite, 0.3),
-    '--color-blue-soft': mix(p.jordyBlue, p.floralWhite, 0.22),
-    '--color-lime-soft': mix(p.lemonLime, p.floralWhite, 0.25),
+    '--color-text-muted': ink(0.62), // ≈ #616161, 6.2:1 on white
+    '--color-text-subtle': ink(0.55), // placeholders, ≈ 4.7:1
+    '--color-border': ink(0.09),
+    '--color-border-strong': ink(0.2),
     '--color-focus': p.onyx,
+
+    // Actions
+    '--color-primary': p.lemonLime,
+    '--color-primary-hover': mix(p.lemonLime, p.onyx, 0.92),
+    '--color-on-primary': p.onyx, // ≈ 19:1 on Lemon Lime
+
+    // Accents
+    '--color-wisteria': p.wisteria,
+    '--color-lilac': p.lilac,
+    '--color-peach': p.peachFuzz,
+    '--color-blue': p.jordyBlue,
+    '--color-lime': p.lemonLime,
+    '--color-floral': p.floralWhite,
+    '--color-wisteria-soft': tint(p.wisteria, 0.16),
+    '--color-wisteria-line': tint(p.wisteria, 0.5),
+    '--color-peach-soft': tint(p.peachFuzz, 0.2),
+    '--color-peach-line': tint(p.peachFuzz, 0.55),
+    '--color-blue-soft': tint(p.jordyBlue, 0.16),
+    '--color-blue-line': tint(p.jordyBlue, 0.5),
+    '--color-lime-soft': tint(p.lemonLime, 0.3),
+
+    // Status
+    '--color-error': brand.status.error,
+    '--color-error-soft': tint(brand.status.error, 0.06),
+    '--color-error-line': tint(brand.status.error, 0.3),
+
+    // Channels for rgba() in shadows and corner gradients
+    '--rgb-onyx': channels(p.onyx),
+    '--rgb-white': channels(p.white),
+    '--rgb-wisteria': channels(p.wisteria),
+    '--rgb-peach': channels(p.peachFuzz),
+    '--rgb-blue': channels(p.jordyBlue),
+    '--rgb-lime': channels(p.lemonLime),
+    '--rgb-lilac': channels(p.lilac),
   };
   for (const [key, value] of Object.entries(tokens)) root.style.setProperty(key, value);
   document.title = `${brand.name} — ${brand.titleSuffix}`;
@@ -58,6 +91,10 @@ function mix(color: string, base: string, strength: number) {
   const b = hexToRgb(base);
   const c = a.map((v, i) => Math.round(v * strength + b[i] * (1 - strength)));
   return `rgb(${c.join(', ')})`;
+}
+
+function channels(hex: string) {
+  return hexToRgb(hex).join(', ');
 }
 
 function hexToRgb(hex: string): [number, number, number] {

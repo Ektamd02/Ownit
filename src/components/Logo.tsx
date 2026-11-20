@@ -3,7 +3,7 @@ import { brand } from '../config/brand';
 export function Logo({ onClick }: { onClick?: () => void }) {
   const content = (
     <>
-      <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true">
         <rect width="32" height="32" rx="9" fill="var(--color-primary)" />
         <circle cx="16" cy="16" r="7.5" fill="none" stroke="var(--color-text)" strokeWidth="3" />
       </svg>

@@ -7,6 +7,8 @@ import { Button } from './Button';
 
 interface Props {
   step: StepId;
+  /** Short line acknowledging the previous answer, shown above the title. */
+  ack?: string;
   title: ReactNode;
   intro?: ReactNode;
   children: ReactNode;
@@ -21,7 +23,7 @@ interface Props {
   wide?: boolean;
 }
 
-export function StepShell({ step, title, intro, children, onBack, onContinue, continueLabel = 'Continue', continueDisabled, continueLoading, blockedReason, footerExtra, wide }: Props) {
+export function StepShell({ step, ack, title, intro, children, onBack, onContinue, continueLabel = 'Continue', continueDisabled, continueLoading, blockedReason, footerExtra, wide }: Props) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const i = stepIndex(step);
 
@@ -32,22 +34,25 @@ export function StepShell({ step, title, intro, children, onBack, onContinue, co
 
   return (
     <main className={`step ${wide ? 'step--wide' : ''}`} id="main">
-      <div className="progress" aria-label={`Step ${i + 1} of ${flow.length}: ${stepLabels[step]}`}>
+      <div className="progress" role="img" aria-label={`Step ${i + 1} of ${flow.length}: ${stepLabels[step]}`}>
         <div className="progress__meta" aria-hidden="true">
-          <span>Step {i + 1} of {flow.length}</span>
           <span className="progress__label">{stepLabels[step]}</span>
+          <span>{i + 1} / {flow.length}</span>
         </div>
-        <div className="progress__track" aria-hidden="true">
-          <div className="progress__fill" style={{ width: `${((i + 1) / flow.length) * 100}%` }} />
-        </div>
+        <ol className="progress__segments" aria-hidden="true">
+          {flow.map((s, n) => (
+            <li key={s} className={`progress__seg ${n < i ? 'is-done' : ''} ${n === i ? 'is-current' : ''}`} />
+          ))}
+        </ol>
       </div>
 
-      <header className="step__header">
+      <header className="step__header enter">
+        {ack && <p className="step__ack">{ack}</p>}
         <h1 className="step__title" tabIndex={-1} ref={headingRef}>{title}</h1>
         {intro && <p className="step__intro">{intro}</p>}
       </header>
 
-      <div className="step__body">{children}</div>
+      <div className="step__body enter enter--delay">{children}</div>
 
       {(onBack || onContinue) && (
         <nav className="step__footer" aria-label="Step navigation">

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { factcheckCopy, fields, goals, stageOptions } from '../config/copy';
+import { acknowledgements, factcheckCopy, fields, goals, stageOptions } from '../config/copy';
 import { deliverableOffers } from '../config/pricing';
 import { Button } from '../components/Button';
 import { ConfirmDialog } from '../components/ConfirmDialog';
@@ -104,6 +104,7 @@ export function FactCheck() {
   return (
     <StepShell
       step="factcheck"
+      ack={acknowledgements.factcheck(draft.profile.fullName.trim().split(/\s+/)[0] ?? '')}
       title={factcheckCopy.title}
       intro={factcheckCopy.intro}
       onBack={() => update({ step: 'context', contextSection: order.length - 1 })}

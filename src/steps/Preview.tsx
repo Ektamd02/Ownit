@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { previewCopy, templates } from '../config/copy';
+import { acknowledgements, previewCopy, templates } from '../config/copy';
 import { Button } from '../components/Button';
 import { ChoiceGroup } from '../components/Choice';
 import { LinkedInPreview } from '../components/LinkedInPreview';
@@ -33,6 +33,7 @@ export function Preview() {
   return (
     <StepShell
       step="preview"
+      ack={acknowledgements.preview}
       title={previewCopy.title}
       intro={previewCopy.intro}
       onBack={() => update({ step: 'factcheck' })}

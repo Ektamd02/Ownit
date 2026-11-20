@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { checkoutCopy } from '../config/copy';
+import { acknowledgements, checkoutCopy } from '../config/copy';
 import { deliverableOffers, PRICES_ARE_SAMPLE } from '../config/pricing';
 import { Button } from '../components/Button';
 import { Icon } from '../components/Icon';
 import { Notice } from '../components/Notice';
 import { StepShell } from '../components/StepShell';
 import { startCheckout } from '../lib/checkout';
-import { computeTotals, findDiscount, formatMoney } from '../lib/pricing';
+import { computeTotals, demoCodeList, findDiscount, formatMoney } from '../lib/pricing';
 import { useDraft } from '../state/store';
 
 export function Checkout() {
@@ -51,6 +51,7 @@ export function Checkout() {
   return (
     <StepShell
       step="checkout"
+      ack={acknowledgements.checkout(totals.lines.map((l) => l.name))}
       title={checkoutCopy.title}
       intro={checkoutCopy.intro}
       onBack={() => update({ step: 'deliverables' })}
@@ -64,7 +65,7 @@ export function Checkout() {
             <article key={l.id} className="card">
               <div className="card__row">
                 <h2 className="h3">{deliverableOffers[l.id].name}</h2>
-                <p className="price">{formatMoney(l.cents)}</p>
+                <p className="price">{formatMoney(l.paise)}</p>
               </div>
               <ul className="check-list">
                 {deliverableOffers[l.id].includes.map((x) => (
@@ -80,15 +81,15 @@ export function Checkout() {
           {PRICES_ARE_SAMPLE && <p className="badge badge--sample">{checkoutCopy.sampleNotice}</p>}
           <dl className="totals">
             {totals.lines.map((l) => (
-              <div key={l.id}><dt>{l.name}</dt><dd>{formatMoney(l.cents)}</dd></div>
+              <div key={l.id}><dt>{l.name}</dt><dd>{formatMoney(l.paise)}</dd></div>
             ))}
-            {totals.bundleCents > 0 && (
-              <div className="totals__saving"><dt>Bundle saving</dt><dd>−{formatMoney(totals.bundleCents)}</dd></div>
+            {totals.bundlePaise > 0 && (
+              <div className="totals__saving"><dt>Bundle saving</dt><dd>−{formatMoney(totals.bundlePaise)}</dd></div>
             )}
             {totals.discount && (
-              <div className="totals__saving"><dt>Code {totals.discount.code}</dt><dd>−{formatMoney(totals.discount.cents)}</dd></div>
+              <div className="totals__saving"><dt>Code {totals.discount.code}</dt><dd>−{formatMoney(totals.discount.paise)}</dd></div>
             )}
-            <div className="totals__total"><dt>Total, one-time</dt><dd>{formatMoney(totals.totalCents)}</dd></div>
+            <div className="totals__total"><dt>Total, one-time</dt><dd>{formatMoney(totals.totalPaise)}</dd></div>
           </dl>
 
           <form className="discount" onSubmit={(e) => { e.preventDefault(); apply(); }}>
@@ -112,7 +113,7 @@ export function Checkout() {
               )}
             </div>
             <p id="discount-msg" className={`small ${codeMsg?.ok === false ? 'text-error' : 'muted'}`} role="status">
-              {codeMsg?.text ?? 'Demo codes: WELCOME10, STUDENT25, FRIEND5'}
+              {codeMsg?.text ?? `Demo codes: ${demoCodeList()}`}
             </p>
           </form>
         </aside>

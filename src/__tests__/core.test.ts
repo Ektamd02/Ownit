@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { generateLocally } from '../lib/generator/demoGenerator';
 import { inputFromDraft } from '../lib/generator';
-import { computeTotals, findDiscount } from '../lib/pricing';
+import { computeTotals, findDiscount, formatMoney } from '../lib/pricing';
 import { canGenerate, findChecks } from '../lib/factcheck';
 import { polishBullet, splitList } from '../lib/text';
 import { recommend } from '../lib/recommend';
@@ -10,17 +10,22 @@ import { sampleDraft } from '../state/sample';
 import { resumeToText } from '../lib/export';
 
 describe('pricing', () => {
-  it('applies the bundle saving and a percent code', () => {
+  it('applies the bundle saving and a percent code in whole rupees', () => {
     const t = computeTotals(['resume', 'linkedin'], 'welcome10');
-    expect(t.subtotalCents).toBe(3400);
-    expect(t.bundleCents).toBe(500);
-    expect(t.discount?.cents).toBe(290);
-    expect(t.totalCents).toBe(2610);
+    expect(t.subtotalPaise).toBe(89800);
+    expect(t.bundlePaise).toBe(10000);
+    expect(t.discount?.paise).toBe(8000); // 10% of ₹798 = ₹79.80 → ₹80
+    expect(t.totalPaise).toBe(71800);
+    expect(formatMoney(t.totalPaise)).toBe('₹718');
+  });
+  it('formats with Indian digit grouping and no dollar signs', () => {
+    expect(formatMoney(12990000)).toBe('₹1,29,900');
+    expect(formatMoney(49900)).not.toContain('$');
   });
   it('ignores unknown codes and never goes below zero', () => {
     expect(findDiscount('NOPE')).toBeNull();
-    expect(computeTotals(['resume'], 'NOPE').totalCents).toBe(1900);
-    expect(computeTotals([], 'FRIEND5').totalCents).toBe(0);
+    expect(computeTotals(['resume'], 'NOPE').totalPaise).toBe(49900);
+    expect(computeTotals([], 'FRIEND100').totalPaise).toBe(0);
   });
 });
 

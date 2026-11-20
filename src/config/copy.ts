@@ -5,12 +5,12 @@
 import type { DeliverableId, ExperienceKind, FieldId, GoalId, StageId, StepId } from '../state/types';
 
 export const welcomeCopy = {
-  eyebrow: 'Resume and LinkedIn help, step by step',
-  lead: 'Answer a few simple questions about what you’ve done. We’ll turn it into a clear resume and LinkedIn profile you can be proud of — using only what’s true.',
+  eyebrow: 'Resume and LinkedIn, step by step',
+  lead: 'Answer a few simple questions about what you’ve done. We’ll shape it into a clear resume and LinkedIn profile — using only what’s true.',
   points: [
-    { title: 'A resume', body: 'Clean, one page, easy for recruiters and hiring software to read.' },
+    { title: 'A resume', body: 'One clean page that recruiters and hiring software can read.' },
     { title: 'A LinkedIn profile', body: 'Headline, About, experience and skills, ready to paste in.' },
-    { title: 'Nothing made up', body: 'You check every fact before anything is written.' },
+    { title: 'Nothing made up', body: 'You check every detail before anything is written.' },
   ],
   start: 'Get started',
   resume: 'Continue where you left off',
@@ -42,7 +42,7 @@ export const goalCopy = {
 
 export const goals: { id: GoalId; label: string; hint: string }[] = [
   { id: 'first-job', label: 'Land my first job', hint: 'Starting out after school or training' },
-  { id: 'internship', label: 'Get an internship', hint: 'Part-time, summer or co-op roles' },
+  { id: 'internship', label: 'Get an internship', hint: 'Part-time, summer or co‑op roles' },
   { id: 'career-change', label: 'Change careers', hint: 'Moving into a new field' },
   { id: 'promotion', label: 'Move up', hint: 'A promotion or a more senior role' },
   { id: 'exploring', label: 'Just exploring', hint: 'Getting ready for whatever comes next' },
@@ -69,12 +69,14 @@ export const roleCopy = {
 
 export const deliverablesCopy = {
   title: 'What would you like to create?',
-  intro: 'Choose one or both. Not sure? We can suggest what makes sense for your goal.',
+  intro: 'Choose one or both, or let us suggest what fits your goal.',
   helpLabel: 'Help me decide',
-  helpHint: 'See what we’d suggest and why',
-  recTitle: 'Here’s what we’d suggest',
-  accept: 'Use these',
+  helpHint: 'A quick suggestion based on your goal',
+  recTitle: 'Our recommendation',
+  whyTitle: 'Why we recommend this',
+  accept: 'Use this recommendation',
   change: 'I’ll choose myself',
+  usingRec: 'Using our recommendation. You can still tick or untick either option.',
 };
 
 export const recommendationReasons: Record<GoalId, Record<DeliverableId, string | null>> = {
@@ -114,6 +116,28 @@ export const checkoutCopy = {
   apply: 'Apply',
   remove: 'Remove',
   continue: 'Continue (demo — no payment)',
+};
+
+/**
+ * Short lines that acknowledge the previous answer at the top of the next step.
+ * Keep them brief and plain — one sentence, no exclamation marks.
+ */
+const goalPhrases: Record<GoalId, string> = {
+  'first-job': 'your first job',
+  internship: 'an internship',
+  'career-change': 'a career change',
+  promotion: 'a step up',
+  exploring: 'keeping your options open',
+};
+
+export const acknowledgements = {
+  field: (goal: GoalId) => `Got it — ${goalPhrases[goal]}. Now let’s find the field you’re aiming for.`,
+  role: (field: string) => (field ? `${field} it is.` : 'Good to know.'),
+  deliverables: (role: string) => (role ? `Noted — we’ll keep ${role} in mind.` : 'No problem — you can add a role any time.'),
+  checkout: (names: string[]) => (names.length > 1 ? 'Both it is. Here’s the breakdown.' : `Just the ${names[0]?.toLowerCase() ?? 'one'} — got it.`),
+  context: 'You’re all set. Now for the important part: what you’ve done.',
+  factcheck: (firstName: string) => (firstName ? `Thanks, ${firstName}. Nearly there.` : 'Thanks. Nearly there.'),
+  preview: 'Everything below comes from the details you confirmed.',
 };
 
 export const stageOptions: { id: StageId; label: string; hint: string }[] = [

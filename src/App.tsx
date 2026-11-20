@@ -37,6 +37,7 @@ export function App() {
 
   return (
     <div className="app">
+      <div className="atmosphere" aria-hidden="true" />
       <AppHeader />
       {active && Screen ? <Screen key={active.id} /> : <Welcome />}
       <footer className="app-footer">

@@ -1,4 +1,4 @@
-import { contextCopy } from '../config/copy';
+import { acknowledgements, contextCopy } from '../config/copy';
 import { Notice } from '../components/Notice';
 import { StepShell } from '../components/StepShell';
 import { useDraft } from '../state/store';
@@ -32,6 +32,7 @@ export function Context() {
   return (
     <StepShell
       step="context"
+      ack={index === 0 ? acknowledgements.context : undefined}
       title={contextCopy.title}
       intro={contextCopy.intro}
       onBack={() => (index === 0 ? update({ step: 'checkout' }) : go(index - 1))}
@@ -59,7 +60,7 @@ export function Context() {
         </ol>
       </nav>
 
-      <section className="panel" aria-labelledby="section-heading">
+      <section className="panel enter" key={current} aria-labelledby="section-heading">
         <h2 id="section-heading" className="h2" tabIndex={-1} ref={sectionHeading}>{sectionTitles[current]}</h2>
         <p className="muted">{sectionIntro(current, draft.profile)}</p>
         <Section profile={draft.profile} onChange={onChange} deliverables={draft.deliverables} />

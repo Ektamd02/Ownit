@@ -1,4 +1,4 @@
-import { fields, roleCopy } from '../config/copy';
+import { acknowledgements, fields, roleCopy } from '../config/copy';
 import { Button } from '../components/Button';
 import { TextField } from '../components/Field';
 import { StepShell } from '../components/StepShell';
@@ -6,11 +6,14 @@ import { useDraft } from '../state/store';
 
 export function Role() {
   const { draft, update } = useDraft();
-  const examples = fields.find((f) => f.id === draft.field)?.roles ?? [];
+  const field = fields.find((f) => f.id === draft.field);
+  const examples = field?.roles ?? [];
+  const fieldName = draft.field === 'other' ? draft.fieldDetail.trim() : field?.label ?? '';
 
   return (
     <StepShell
       step="role"
+      ack={acknowledgements.role(fieldName)}
       title={roleCopy.title}
       intro={roleCopy.intro}
       onBack={() => update({ step: 'goal' })}
